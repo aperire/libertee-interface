@@ -22,7 +22,7 @@ const NavWrapper = styled.div`
         cursor: pointer;
 
         .close_icon {
-          color: ${(props) => props.theme.BodySecondaryColor};
+          color: ${(props) => props.theme.BodyTertiaryColor};
           font-size: 1.4rem;
         }
       }
@@ -118,7 +118,7 @@ const NavWrapper = styled.div`
             font-size: 0.9rem;
           }
           span {
-            color: ${(props) => props.theme.BodySecondaryColor};
+            color: ${(props) => props.theme.lightMainColor};
             font-size: 0.8rem;
           }
         }

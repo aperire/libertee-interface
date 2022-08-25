@@ -1,18 +1,17 @@
 import { createGlobalStyle } from "styled-components";
-// #dfd
 
 export const lightTheme = {
   BodyMainBg: "rgb(255,255,255)",
   BodyPrimaryBg: "rgb(239, 243, 244)",
   BodySecondaryBg: "rgb(247, 249, 249)",
   BodyPrimaryColor: "black",
-  BodyTertiaryColor: "white",
-  bodyLineMain: "rgb(239, 243, 244)",
   BodySecondaryColor: "#575757",
+  BodyTertiaryColor: "white",
+  lightMainColor: "#b8b8b8",
+  bodyLineMain: "rgb(239, 243, 244)",
   bodyOverlay: "rgb(239, 243, 244)",
   HeadersMain: "black",
   ButtonPrimaryBg: "#854DFF",
-  lightMainColor: "#b8b8b8",
 };
 
 export const darkTheme = {};
@@ -148,6 +147,32 @@ span {
   cursor: not-allowed! important;
 }
  
+.web3modal-modal-card {
+  background: ${(props) => props.theme.BodyTertiaryColor};
+  // max-width: 1000px !important;
+  .web3modal-provider-wrapper{
+    .web3modal-provider-container{
+      padding: 24px 28px !important;
+
+      .web3modal-provider-icon{
+        img{
+          width:auto !important;
+          height:2rem !important;
+        }
+      }
+      .web3modal-provider-name{
+        font-size: 20px !important;
+      }
+      .web3modal-provider-description{
+        font-size: 15px !important;
+        margin: 0em 0px !important;
+        color: ${(props) => props.theme.BodyTertiaryColor};
+      }
+    }
+  }
+}
+
+
 @media only screen and (max-width: 1200px) { 
   .float_container {
     padding: 0px 0px;

@@ -14,6 +14,8 @@ module.exports = function override(config) {
     path: false,
     buffer: false,
     process: false,
+    tty: false,
+    zlib: false,
   };
 
   config.resolve.fallback = fallback;

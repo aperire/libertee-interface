@@ -1,79 +1,114 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+import { providerOptions } from "lib/ProviderOptions";
 
 export const WalletContext = createContext();
 
 export const WalletProvider = ({ children }) => {
-  const [provider, setProvider] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [account, setAccount] = useState(null);
-  const [balance, setBalance] = useState(null);
-  const [isConnected, setIsConnected] = useState(false);
+  const [provider, setProvider] = useState();
+  const [library, setLibrary] = useState();
+  const [publickey, setPublickey] = useState();
+  const [error, setError] = useState("");
+  const [chainId, setChainId] = useState();
+  const [network, setNetwork] = useState();
+  const [signer, setSigner] = useState(null);
 
-  const connectWalletHandler = () => {
-    if (window.ethereum !== "undefined") {
-      const connect = window.ethereum.isConnected();
-      window.ethereum
-        .request({ method: "eth_requestAccounts" })
-        .then((accounts) => {
-          handleAccountsChanged(accounts[0]);
-          setIsConnected(connect);
-          setProvider(window.ethereum);
-        });
-    } else {
-      setErrorMessage("install MetaMask");
-    }
-  };
-
-  const disconnectWalletHandler = () => {
-    window.ethereum.on("disconnect", (error) => console.log(error));
-  };
-
-  const handleAccountsChanged = (newAccount) => {
-    setAccount(newAccount);
-    getBalance(newAccount.toString());
-  };
-
-  const getBalance = (address) => {
-    window.ethereum
-      .request({
-        method: "eth_getBalance",
-        params: [address, "latest"],
-      })
-      .then((bal) => {
-        setBalance(ethers.utils.formatEther(bal));
-      });
-  };
-
-  window.ethereum.on("accountsChanged", function (accounts) {
-    handleAccountsChanged(accounts[0]);
+  const web3Modal = new Web3Modal({
+    network: "mainnet",
+    cacheProvider: true,
+    providerOptions,
+    theme: {
+      background: "#854DFF",
+      main: "rgb(199, 199, 199)",
+      secondary: "rgb(136, 136, 136)",
+      hover: "rgba(255, 255, 255,0.2)",
+    },
   });
 
-  window.ethereum.on("chainChanged", (chainId) => {
-    console.log(chainId);
-    window.location.reload();
-  });
+  const connectWallet = () => {
+    return async () => {
+      try {
+        const provider = await web3Modal.connect();
+        const library = new ethers.providers.Web3Provider(provider);
+        const signer = library.getSigner();
+        const accounts = await library.listAccounts();
+        const network = await library.getNetwork();
+        setProvider(provider);
+        setLibrary(library);
+        setSigner(signer);
+        if (accounts) setPublickey(accounts[0]);
+        setNetwork(network);
+      } catch (error) {
+        setError(error);
+        console.error(error);
+      }
+    };
+  };
+
+  const refreshState = () => {
+    setPublickey();
+    setChainId();
+    setNetwork("");
+    setProvider();
+    setLibrary();
+  };
+
+  const disconnectWallet = () => {
+    return async () => {
+      await web3Modal.clearCachedProvider();
+      refreshState();
+    };
+  };
 
   useEffect(() => {
-    if (window.ethereum.isConnected()) {
-      console.log(window.ethereum);
-      console.log(window.ethereum);
-      window.ethereum.on("accountsChanged", function (accounts) {
-        handleAccountsChanged(accounts[0]);
-      });
+    if (web3Modal.cachedProvider) {
+      connectWallet();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (provider?.on) {
+      const handleAccountsChanged = (accounts) => {
+        if (accounts) setPublickey(accounts[0]);
+      };
+
+      const handleChainChanged = (_hexChainId) => {
+        setChainId(_hexChainId);
+      };
+
+      const handleDisconnect = () => {
+        console.log("disconnect", error);
+        disconnectWallet();
+      };
+
+      provider.on("accountsChanged", handleAccountsChanged);
+      provider.on("chainChanged", handleChainChanged);
+      provider.on("disconnect", handleDisconnect);
+
+      return () => {
+        if (provider.removeListener) {
+          provider.removeListener("accountsChanged", handleAccountsChanged);
+          provider.removeListener("chainChanged", handleChainChanged);
+          provider.removeListener("disconnect", handleDisconnect);
+        }
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [provider]);
 
   return (
     <WalletContext.Provider
       value={{
         provider,
-        errorMessage,
-        account,
-        balance,
-        isConnected,
-        connectWalletHandler,
-        disconnectWalletHandler,
+        connectWallet,
+        disconnectWallet,
+        publickey,
+        library,
+        chainId,
+        network,
+        signer,
       }}
     >
       {children}
