@@ -187,9 +187,4 @@ span {
   
 }
 
-@media only screen and (max-width: 900px) { 
-}
-
-@media only screen and (max-width: 600px) {
-}
 `;

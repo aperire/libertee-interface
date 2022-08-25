@@ -5,12 +5,15 @@ import ModeProvider from "assets/theme";
 import { Provider } from "react-redux";
 import CustomizedSnackbar from "components/globalComponents/CustomizedSnackbar";
 import SnackbarProviderMessage from "components/globalComponents/SnackbarProviderMessage";
+import { WalletProvider } from "contexts/WalletContext";
 
 export const CommonRoot = ({ children }) => {
   return (
     <React.StrictMode>
       <BrowserRouter>
-        <Provider store={store}>{children}</Provider>
+        <Provider store={store}>
+          <WalletProvider>{children}</WalletProvider>
+        </Provider>
       </BrowserRouter>
     </React.StrictMode>
   );

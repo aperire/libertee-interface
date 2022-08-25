@@ -17,6 +17,17 @@ const ButtonWrapper = styled.button`
     color:white;
     background: #854DFF;
     font-weight:600;
+    transition:all 0.3s;
+  `}
+
+  ${(props) =>
+    props.active === 2 &&
+    `
+    color: #854DFF;
+    background: white;
+    font-weight:600;
+    transition:all 0.3s;
+    border:1px solid  #854DFF;
   `}
 
   span {

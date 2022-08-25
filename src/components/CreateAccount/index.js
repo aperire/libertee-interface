@@ -3,9 +3,20 @@ import AccountWrapper from "./Account.style";
 import Button from "Layout/Button";
 import { AccountFormFields } from "Layout/FormElement";
 import Input from "Layout/Form/Input";
+import { useWallet } from "contexts/WalletContext";
 
 const CreateAccount = () => {
-  const [Loading, setLoading] = useState(false);
+  const {
+    connectWalletHandler,
+    provider,
+    errorMessage,
+    account,
+    balance,
+    isConnected,
+    disconnectWalletHandler,
+  } = useWallet();
+
+  console.log(provider, errorMessage, account, balance, isConnected);
 
   const [AccountFields, setAccountFields] = useState({
     nickName: "",
@@ -15,14 +26,16 @@ const CreateAccount = () => {
     hashtag: [],
   });
 
-  console.log(AccountFields);
-
   const AccountFormData = (e) => {
     setAccountFields({ ...AccountFields, [e.target.name]: e.target.value });
   };
 
   const SelectFormImg = (e) => {
     setAccountFields({ ...AccountFields, image: e.target.files[0] });
+  };
+
+  const CreateAccount = async (e) => {
+    e.preventDefault();
   };
 
   return (
@@ -37,21 +50,35 @@ const CreateAccount = () => {
                 </div>
                 <div className="col-lg-6 col-md-6 col-8 d-flex justify-content-end">
                   <div className="wallet">
-                    <Button
-                      active={1}
-                      br="50px"
-                      p="0.8rem 1.8rem"
-                      size="1rem"
-                      id="btn"
-                    >
-                      Connect Wallet
-                    </Button>
+                    {account === null ? (
+                      <Button
+                        active={1}
+                        br="50px"
+                        p="0.8rem 1.8rem"
+                        size="1rem"
+                        id="btn"
+                        onClick={() => connectWalletHandler()}
+                      >
+                        Connect to MetaMask
+                      </Button>
+                    ) : (
+                      <Button
+                        active={1}
+                        br="50px"
+                        p="0.8rem 1.8rem"
+                        size="1rem"
+                        id="btn"
+                        onClick={() => disconnectWalletHandler()}
+                      >
+                        Disconnect
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="col-12 d-flex justify-content-center">
+          <div className="col-12 d-flex justify-content-center mt-3">
             <div className="title text-center">
               <h1>Welcome to Libertee Protocol</h1>
               <span>Access Uncensorable Contents on the Internet</span>
@@ -61,9 +88,9 @@ const CreateAccount = () => {
             <div className="form_title text-center">
               <h4>Create Account</h4>
             </div>
-            <div className="">
+            <form method="post" onSubmit={CreateAccount}>
               <div className="row d-flex justify-content-center">
-                <div className="col-6">
+                <div className="col-lg-6 col-md-8 col-12">
                   <div className="form_fields">
                     <div className="row">
                       {AccountFormFields.map((List, ind) => {
@@ -80,7 +107,6 @@ const CreateAccount = () => {
                                 id={controlId}
                                 value={AccountFields[name]}
                                 onChange={AccountFormData}
-                                required={required}
                               />
                             ) : (
                               <label className="upload">
@@ -91,23 +117,35 @@ const CreateAccount = () => {
                                   autoComplete="off"
                                   id={controlId}
                                   onChange={SelectFormImg}
-                                  required={required}
                                   style={{ display: "none" }}
                                 />
-                                {AccountFields.image.name
-                                  ? AccountFields.image.name
-                                  : " Upload Image"}
+                                {AccountFields?.image?.name
+                                  ? AccountFields?.image?.name
+                                  : " Upload file ( png, jpg, gif )"}
                               </label>
                             )}
                           </div>
                         );
                       })}
-                      <div className="col-12"></div>
+                      <div className="col-12 submit_form mt-5">
+                        <Button
+                          type="submit"
+                          active={2}
+                          br="50px"
+                          p="0.8rem 1.8rem"
+                          size="1rem"
+                          id="btn"
+                          disabled={true}
+                          className="not-allowed"
+                        >
+                          Create Account
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
