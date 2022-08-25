@@ -10,8 +10,9 @@ import { IoMdLogOut } from "react-icons/io";
 import { createAccountFunction } from "utils";
 
 const CreateAccount = () => {
-  const dispatch = useDispatch();
   const { connectWallet, disconnectWallet, publickey, signer } = useWallet();
+  const dispatch = useDispatch();
+  const [Loading, setLoading] = useState(false);
   const [hashtag, setHashtag] = useState("");
   const [AccountFields, setAccountFields] = useState({
     nickName: "",
@@ -53,7 +54,7 @@ const CreateAccount = () => {
 
   const CreateAccount = async (e) => {
     e.preventDefault();
-    await createAccountFunction(AccountFields, publickey, signer);
+    dispatch(createAccountFunction(AccountFields, signer, setLoading));
   };
 
   return (
@@ -188,17 +189,12 @@ const CreateAccount = () => {
                           onChange={(e) => setHashtag(e.target.value)}
                         />
 
-                        <Button
-                          active={2}
-                          br="0.4rem"
-                          p="0.3rem 0.3rem"
-                          size="0.8rem"
-                          id="btn"
+                        <span
                           className="add_hashtag"
                           onClick={() => HashtagFormData()}
                         >
                           add
-                        </Button>
+                        </span>
                       </div>
                       <div className="col-12 hashtag_section">
                         <div className="row">
@@ -229,10 +225,27 @@ const CreateAccount = () => {
                           p="0.8rem 1.8rem"
                           size="1rem"
                           id="btn"
-                          disabled={!publickey ? true : false}
+                          disabled={
+                            publickey ? Loading : !publickey ? true : false
+                          }
                           className={!publickey ? "not-allowed" : null}
                         >
-                          Create Account
+                          {Loading ? (
+                            <p
+                              style={{
+                                color: "black",
+                                fontSize: "1.7rem",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItem: "center",
+                                marginTop: "3px",
+                              }}
+                            >
+                              <i className="zmdi zmdi-rotate-left zmdi-hc-spin-reverse"></i>
+                            </p>
+                          ) : (
+                            "Create Account"
+                          )}
                         </Button>
                       </div>
                     </div>

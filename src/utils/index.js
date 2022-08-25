@@ -1,88 +1,65 @@
 import { Libertee } from "libertee-sdk";
-import { ethers } from "ethers";
-import { Readable } from "stream";
+import { setSnackbar } from "Redux/actions/snackbar";
 
-function base64ToBufferAsync(base64) {
-  fetch(base64)
-    .then((res) => res.arrayBuffer())
-    .then((buffer) => {
-      var myBuffer = new Uint8Array(buffer);
-      var stream = new Readable();
-      stream.push(myBuffer);
-      stream.push(null);
-      console.log(stream);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
+export const createAccountFunction = (AccountFields, signer, setLoading) => {
+  return async (dispatch) => {
+    try {
+      setLoading(true);
+      const {
+        nickName,
+        bio,
+        website,
+        image,
+        hashtags,
+        telegram,
+        twitter,
+        phone,
+        email,
+      } = AccountFields;
 
-export const createAccountFunction = async (
-  AccountFields,
-  publickey,
-  signer
-) => {
-  try {
-    const {
-      nickName,
-      bio,
-      website,
-      image,
-      hashtags,
-      telegram,
-      twitter,
-      phone,
-      email,
-    } = AccountFields;
+      if (!nickName || !bio || !website || !image || !hashtags) {
+        setLoading(false);
+        dispatch(setSnackbar(true, "info", "All fields required!"));
+        return;
+      }
 
-    // let fileInfo;
-    let baseURL = "";
+      const libertee = new Libertee(signer);
 
-    let reader = new FileReader();
-    reader.readAsDataURL(image);
+      const nameExists = await libertee.checkNameExists(nickName);
 
-    reader.onload = () => {
-      baseURL = reader.result;
-      base64ToBufferAsync(baseURL, reader);
-    };
+      if (nameExists) {
+        dispatch(setSnackbar(true, "success", "Name already exits!"));
+        setLoading(false);
+        return;
+      }
 
-    // const stream = fs.createReadStream(base64);
-    // console.log(stream);
+      const pfpHash = await libertee.uploadPinata(
+        "QmccEdPvxSpJ7L4yyNjapHy7idAE7xvuULX2zdprnanpCz",
+        image.name,
+        "3b710ac5b6fddca7c1b8",
+        "226c102e9afe271af2ffa7c7f1fc955b72e116dddbb947db1fca3852fddcfe65"
+      );
 
-    // const libertee = new Libertee(signer);
+      const txHash = await libertee.createAccount(
+        pfpHash,
+        nickName,
+        bio,
+        telegram,
+        twitter,
+        phone,
+        email,
+        website,
+        hashtags
+      );
 
-    // const nameExists = await libertee.checkNameExists(nickName);
-
-    // if (nameExists) {
-    //   console.log("Name already exits!");
-    //   return false;
-    // }
-
-    // upload to IPFS
-    // const pfpHash = await libertee.uploadPinata(
-    //   image,
-    //   image.name,
-    //   "3b710ac5b6fddca7c1b8",
-    //   "226c102e9afe271af2ffa7c7f1fc955b72e116dddbb947db1fca3852fddcfe65"
-    // );
-
-    // console.log(pfpHash);
-
-    // const txHash = await libertee.createAccount(
-    //   pfpHash,
-    //   nickName,
-    //   bio,
-    //   telegram,
-    //   twitter,
-    //   phone,
-    //   email,
-    //   website,
-    //   hashtags
-    // );
-    // console.log(txHash);
-
-    // return txHash;
-  } catch (error) {
-    console.log(error);
-  }
+      if (txHash) {
+        setLoading(false);
+        dispatch(setSnackbar(true, "success", "Successfully created account"));
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      dispatch(setSnackbar(true, "error", "Something went wrong!"));
+    }
+  };
 };

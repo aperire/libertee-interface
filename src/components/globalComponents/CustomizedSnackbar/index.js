@@ -22,7 +22,7 @@ const CustomizedSnackbar = ({ children }) => {
       <>
         <SnackbarWrapper>
           <div className="snackbar">
-            <p>{snackbarMessage}</p>
+            <p className=" pt-1">{snackbarMessage}</p>
           </div>
         </SnackbarWrapper>
       </>

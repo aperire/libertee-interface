@@ -4,21 +4,25 @@ import { setSnackbar } from "Redux/actions/snackbar";
 import { useDispatch, useSelector } from "react-redux";
 
 const css = {
-  backgroundColor: "rgba(255,255,255,0.2)",
-  backdropFilter: "blur(20px)",
+  backgroundColor: "rgb(239, 243, 244)",
+  backdropFilter: "blur(5px)",
   fontWeight: "600",
-  fontSize: "0.9rem",
+  fontSize: "1rem",
   paddingLeft: "20px",
+  color: "black", //color
+  borderLeft: "5px solid #854DFF",
 };
 
 const iconCss = {
   fontSize: "1.2rem",
+  color: "#854DFF", //color
 };
 
 const closeCSS = {
-  fontSize: "1.1rem",
+  fontSize: "1.2rem",
   marginRight: "8px",
   cursor: "pointer",
+  color: "#854DFF", //color
 };
 
 const SnackbarProviderMessage = ({ children }) => {

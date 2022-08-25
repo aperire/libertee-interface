@@ -134,7 +134,7 @@ const AccountWrapper = styled.div`
 
     .title {
       h1 {
-        font-size: 2.4rem;
+        font-size: 2.3rem;
         font-weight: 800;
       }
 
@@ -171,8 +171,15 @@ const AccountWrapper = styled.div`
           .add_hashtag {
             position: absolute;
             right: 30px;
-            top: 7px;
+            top: 5px;
             width: 100px;
+            background:  ${(props) => props.theme.BodyTertiaryColor};
+            padding:0.3rem 0.5rem;
+            text-align:center;
+            border-radius:0.4rem;
+            color: ${(props) => props.theme.ButtonPrimaryBg};
+            font-size: 0.9rem;
+            cursor:pointer;
           }
         }
 
