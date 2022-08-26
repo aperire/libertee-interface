@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import { providerOptions } from "lib/ProviderOptions";
+import { getLibertee } from "utils";
 
 export const WalletContext = createContext();
 
@@ -13,6 +14,7 @@ export const WalletProvider = ({ children }) => {
   const [chainId, setChainId] = useState();
   const [network, setNetwork] = useState();
   const [signer, setSigner] = useState(null);
+  const [Account, setAccount] = useState(null);
 
   const web3Modal = new Web3Modal({
     network: "mainnet",
@@ -37,7 +39,9 @@ export const WalletProvider = ({ children }) => {
         setProvider(provider);
         setLibrary(library);
         setSigner(signer);
-        if (accounts) setPublickey(accounts[0]);
+        if (accounts) {
+          setPublickey(accounts[0]);
+        }
         setNetwork(network);
       } catch (error) {
         setError(error);
@@ -46,12 +50,19 @@ export const WalletProvider = ({ children }) => {
     };
   };
 
+  const readAccount = async (address, signer) => {
+    const libertee = getLibertee(signer);
+    const profile = await libertee.getProfileMap(address);
+    setAccount(profile);
+  };
+
   const refreshState = () => {
     setPublickey();
     setChainId();
     setNetwork("");
     setProvider();
     setLibrary();
+    setAccount(null);
   };
 
   const disconnectWallet = () => {
@@ -98,6 +109,15 @@ export const WalletProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider]);
 
+  useEffect(() => {
+    if (publickey && signer) {
+      const getAccount = async () => {
+        await readAccount(publickey, signer);
+      };
+      getAccount();
+    }
+  }, [publickey, signer]);
+
   return (
     <WalletContext.Provider
       value={{
@@ -109,6 +129,8 @@ export const WalletProvider = ({ children }) => {
         chainId,
         network,
         signer,
+        Account,
+        readAccount,
       }}
     >
       {children}

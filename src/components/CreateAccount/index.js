@@ -9,7 +9,7 @@ import { createAccountFunction, isUserExits } from "utils";
 import WalletButton from "../globalComponents/WalletButton";
 
 const CreateAccount = () => {
-  const { publickey, signer } = useWallet();
+  const { publickey, signer, readAccount } = useWallet();
   const dispatch = useDispatch();
   const [checkUser, setCheckUser] = useState(null);
   const [Loading, setLoading] = useState(false);
@@ -63,7 +63,15 @@ const CreateAccount = () => {
 
   const CreateAccount = async (e) => {
     e.preventDefault();
-    dispatch(createAccountFunction(AccountFields, signer, setLoading));
+    dispatch(
+      createAccountFunction(
+        AccountFields,
+        signer,
+        setLoading,
+        readAccount,
+        publickey
+      )
+    );
   };
 
   return (
@@ -82,7 +90,13 @@ const CreateAccount = () => {
                   />
                 </div>
                 <div className="col-lg-6 col-md-6 col-8 d-flex justify-content-end">
-                  <WalletButton />
+                  <WalletButton
+                    p="0.8rem 1.5rem"
+                    size="1rem"
+                    radius="50px"
+                    ImgHeight="1.8rem"
+                    Title="Connect to MetaMask"
+                  />
                 </div>
               </div>
             </div>

@@ -15,7 +15,7 @@ const SearchHeaderWrapper = styled.div`
     .search_icon {
       position: absolute;
       left: 20px;
-      top: 12px;
+      top: 14px;
       font-size: 1.3rem;
       color: grey;
     }
@@ -25,7 +25,7 @@ const SearchHeaderWrapper = styled.div`
       outline: none;
       background: ${(props) => props.theme.BodyPrimaryBg};
       border-radius: 50px;
-      padding: 0.7rem 0rem;
+      padding: 0.8rem 0rem;
       text-indent: 60px;
       width: 100%;
       font-size: 0.9rem;

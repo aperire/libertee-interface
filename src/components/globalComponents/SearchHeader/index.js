@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import SearchHeaderWrapper from "./SearchHeader.style";
 import { IoSearchOutline } from "react-icons/io5";
 
@@ -22,4 +22,4 @@ const SearchHeader = () => {
   );
 };
 
-export default SearchHeader;
+export default memo(SearchHeader);

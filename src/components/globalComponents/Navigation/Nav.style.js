@@ -95,6 +95,7 @@ const NavWrapper = styled.div`
         display: flex;
         align-items: center;
         padding: 0.8rem 1rem;
+        width: auto;
 
         .profile_icon {
           img {

@@ -29,13 +29,6 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
 }
 
-body,
-html {
-    margin: 0;
-    height: 100%;
-    width: 100%;
-}
-
 html {
   margin: 0;
   padding: 0;
@@ -50,24 +43,8 @@ html {
   -moz-text-size-adjust: 100%;
 }
 
-::-webkit-scrollbar {
-    height: 8px;
-    width:10px;
-    background: ${(props) => props.theme.BodyMainBg};
-}
-
-::-webkit-scrollbar-corner {
-  
-  background: ${(props) => props.theme.BodyMainBg};
-}
-
-::-webkit-scrollbar-thumb {
-    background: ${(props) => props.theme.lightMainColor};
-    border-radius: 10px;
-    -webkit-border-radius: 1ex;
-}
-
 body {
+  padding: 0;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   font-family: 'Raleway', sans-serif; 
@@ -78,6 +55,22 @@ body {
   padding-left: 0px;
   margin-right: auto;
   margin-left: auto;
+}
+
+::-webkit-scrollbar {
+  height: 8px;
+  width:10px;
+  background: ${(props) => props.theme.BodyMainBg};
+}
+
+::-webkit-scrollbar-corner {
+  background: ${(props) => props.theme.BodyMainBg};
+}
+
+::-webkit-scrollbar-thumb {
+  background: ${(props) => props.theme.lightMainColor};
+  border-radius: 10px;
+  -webkit-border-radius: 1ex;
 }
 
 h1,
@@ -93,6 +86,10 @@ h6 {
 p {
   margin-bottom: 0 !important;
   font-weight:500;
+}
+
+label {
+  margin-bottom:inherit;
 }
 
 span {
@@ -132,6 +129,7 @@ span {
   border-left:1px solid ${(props) => props.theme.bodyLineMain};
   border-right:1px solid ${(props) => props.theme.bodyLineMain};
   height:100%;
+  min-height:100vh;
   padding-bottom:50px;
 }
 
@@ -140,6 +138,7 @@ span {
   float: left;
   padding: 0px 25px;
   height:100%;
+  min-height:100vh;
 }
 
 .not-allowed {

@@ -4,7 +4,7 @@ const WalletButtonWrapper = styled.div`
   .wallet {
     img {
       width: auto;
-      height: 1.8rem;
+      height: ${(props) => props.ImgHeight};
     }
 
     .btn-group {
@@ -15,17 +15,19 @@ const WalletButtonWrapper = styled.div`
         border: none;
         outline: none;
         width: 100%;
-        padding: 0.8rem 1.8rem;
-        border-radius: 10px;
+        padding: ${(props) => props.padding};
+        border-radius: ${(props) => props.radius};
         background: ${(props) => props.theme.ButtonPrimaryBg};
         transition: all 0.2s;
         display: flex;
         align-items: center;
+        justify-content: center;
 
         .dropdown_btn_left {
           span {
             color: ${(props) => props.theme.BodyTertiaryColor};
             text-transform: uppercase;
+            font-size: ${(props) => props.size};
           }
         }
 

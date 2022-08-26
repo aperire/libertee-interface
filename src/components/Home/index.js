@@ -2,17 +2,25 @@ import React from "react";
 import HomeWrapper from "./Home.style";
 import MainHeader from "../globalComponents/MainHeader";
 import SearchHeader from "../globalComponents/SearchHeader";
+import { useWallet } from "contexts/WalletContext";
+import Post from "./Post";
 
 const Home = () => {
+  const { Account } = useWallet();
+
   return (
     <>
       <HomeWrapper>
         <div className="page_container">
           <div className="float_page_left">
+            <MainHeader title="Home" />
             <div className="container Home">
-              <div className="row">
+              <div className="row post_section">
                 <div className="col-12">
-                  <MainHeader title="Home" />
+                  <Post
+                    pfpHash={Account?.pfpHash}
+                    username={Account?.username}
+                  />
                 </div>
               </div>
             </div>

@@ -1,10 +1,14 @@
-import React from "react";
+import React, { memo } from "react";
 import { NavLink } from "react-router-dom";
 import { NavigationList } from "assets/api";
 import NavWrapper from "./Nav.style";
 import Button from "Layout/Button";
+import { useWallet } from "contexts/WalletContext";
+import WalletButton from "components/globalComponents/WalletButton";
 
 const Navigation = () => {
+  const { publickey, Account } = useWallet();
+
   return (
     <NavWrapper>
       <div className="container Navigation">
@@ -50,13 +54,45 @@ const Navigation = () => {
 
             <div className="col-12">
               <div className="profile_section">
-                <div className="profile_icon">
-                  <img src="/images/Logo.png" alt="profile" loading="lazy" />
-                </div>
-                <div className="details d-flex flex-column pl-2">
-                  <p>Deepak kurmi</p>
-                  <span>@k847764kurmi</span>
-                </div>
+                {!Account ? (
+                  <>
+                    {publickey ? (
+                      <Button
+                        active={1}
+                        br="50px"
+                        p="0.8rem 3.5rem"
+                        size="0.9rem"
+                        id="btn"
+                      >
+                        Create Account
+                      </Button>
+                    ) : (
+                      <WalletButton
+                        p="0.8rem 2.8rem"
+                        size="0.9rem"
+                        radius="50px"
+                        ImgHeight="1.5rem"
+                        Title="Connect wallet"
+                      />
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="profile_icon">
+                      {Account.pfpHash && (
+                        <img
+                          src={`https://ipfs.io/ipfs/${Account.pfpHash}`}
+                          alt={Account.username}
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
+                    <div className="details d-flex flex-column pl-2">
+                      <p>{Account?.username}</p>
+                      <span>{Account?.bio}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -66,4 +102,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default memo(Navigation);

@@ -2,6 +2,22 @@ import { Libertee } from "libertee-sdk";
 import { setSnackbar } from "Redux/actions/snackbar";
 import axios from "axios";
 
+export const getImgHash = async (formData) => {
+  const resFile = await axios({
+    method: "post",
+    url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+    data: formData,
+    headers: {
+      pinata_api_key: "3b710ac5b6fddca7c1b8",
+      pinata_secret_api_key:
+        "226c102e9afe271af2ffa7c7f1fc955b72e116dddbb947db1fca3852fddcfe65",
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return resFile.data.IpfsHash;
+};
+
 export const getLibertee = (signer) => {
   return new Libertee(signer);
 };
@@ -14,7 +30,13 @@ export const isUserExits = async (signer, nickName) => {
   } catch (error) {}
 };
 
-export const createAccountFunction = (AccountFields, signer, setLoading) => {
+export const createAccountFunction = (
+  AccountFields,
+  signer,
+  setLoading,
+  readAccount,
+  publickey
+) => {
   return async (dispatch) => {
     try {
       setLoading(true);
@@ -29,8 +51,6 @@ export const createAccountFunction = (AccountFields, signer, setLoading) => {
         phone,
         email,
       } = AccountFields;
-
-      console.log(file);
 
       if (!nickName || !bio || !website || !file || hashtags.length === 0) {
         setLoading(false);
@@ -55,22 +75,10 @@ export const createAccountFunction = (AccountFields, signer, setLoading) => {
         const formData = new FormData();
         formData.append("file", file);
 
-        const resFile = await axios({
-          method: "post",
-          url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
-          data: formData,
-          headers: {
-            pinata_api_key: "3b710ac5b6fddca7c1b8",
-            pinata_secret_api_key:
-              "226c102e9afe271af2ffa7c7f1fc955b72e116dddbb947db1fca3852fddcfe65",
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
-        const ImgHash = `${resFile.data.IpfsHash}`;
+        const IpfsHash = await getImgHash(formData);
 
         const txHash = await libertee.createAccount(
-          ImgHash,
+          IpfsHash,
           nickName,
           bio,
           telegram,
@@ -86,6 +94,7 @@ export const createAccountFunction = (AccountFields, signer, setLoading) => {
           dispatch(
             setSnackbar(true, "success", "Successfully created account")
           );
+          await readAccount(publickey, signer);
         }
       } else {
         setLoading(false);
@@ -98,10 +107,4 @@ export const createAccountFunction = (AccountFields, signer, setLoading) => {
       dispatch(setSnackbar(true, "error", error.code));
     }
   };
-};
-
-export const readAccount = async (address, signer) => {
-  const libertee = getLibertee(signer);
-  const profile = await libertee.getProfileMap(address);
-  return profile;
 };

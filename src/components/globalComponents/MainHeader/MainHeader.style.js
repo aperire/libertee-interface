@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const MainHeaderWrapper = styled.div`
-  padding: 1.1rem 0rem;
+  padding: 0.8rem 1.5rem;
   background: rgba(255, 255, 255, 0.8);
   z-index: 900;
   position: sticky;
@@ -17,8 +17,8 @@ const MainHeaderWrapper = styled.div`
 
   .title {
     h1 {
-      font-size: 1.05rem;
-      font-weight: 700;
+      font-size: 1.2rem;
+      font-weight: 500;
     }
   }
 `;
