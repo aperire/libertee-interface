@@ -15,6 +15,7 @@ export const WalletProvider = ({ children }) => {
   const [network, setNetwork] = useState();
   const [signer, setSigner] = useState(null);
   const [Account, setAccount] = useState(null);
+  const [Posts, setPosts] = useState([]);
 
   const web3Modal = new Web3Modal({
     network: "mainnet",
@@ -54,6 +55,36 @@ export const WalletProvider = ({ children }) => {
     const libertee = getLibertee(signer);
     const profile = await libertee.getProfileMap(address);
     setAccount(profile);
+  };
+
+  const readFeedPosts = async (start, end, signer) => {
+    try {
+      var postArray = [];
+
+      const libertee = getLibertee(signer);
+      const mediaArrayLength = await libertee.getMediaArrayLength();
+      for (
+        var i = mediaArrayLength - start - 1;
+        i > mediaArrayLength - end - 1;
+        i--
+      ) {
+        var media = await libertee.getMediaArray(i);
+
+        const data = parseInt(media.uploadDate);
+        const message = media.text;
+        const img = media.ipfsHash;
+        const userName = media.userName;
+
+        postArray.push({
+          data,
+          message,
+          img,
+          userName,
+        });
+      }
+
+      setPosts([...Posts, ...postArray]);
+    } catch (error) {}
   };
 
   const refreshState = () => {
@@ -111,11 +142,13 @@ export const WalletProvider = ({ children }) => {
 
   useEffect(() => {
     if (publickey && signer) {
-      const getAccount = async () => {
+      const getInfo = async () => {
         await readAccount(publickey, signer);
+        await readFeedPosts(0, 10, signer);
       };
-      getAccount();
+      getInfo();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publickey, signer]);
 
   return (
@@ -131,6 +164,7 @@ export const WalletProvider = ({ children }) => {
         signer,
         Account,
         readAccount,
+        Posts,
       }}
     >
       {children}

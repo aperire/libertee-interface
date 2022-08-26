@@ -6,7 +6,9 @@ import { useWallet } from "contexts/WalletContext";
 import Post from "./Post";
 
 const Home = () => {
-  const { Account } = useWallet();
+  const { Account, signer, Posts } = useWallet();
+
+  console.log(Posts);
 
   return (
     <>
@@ -20,6 +22,7 @@ const Home = () => {
                   <Post
                     pfpHash={Account?.pfpHash}
                     username={Account?.username}
+                    signer={signer}
                   />
                 </div>
               </div>

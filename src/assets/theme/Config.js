@@ -8,6 +8,7 @@ export const lightTheme = {
   BodySecondaryColor: "#575757",
   BodyTertiaryColor: "white",
   lightMainColor: "#6b6b6b",
+  lightSecondaryColor: "#a8a8a8",
   bodyLineMain: "rgb(239, 243, 244)",
   bodyOverlay: "rgb(239, 243, 244)",
   HeadersMain: "black",

@@ -108,3 +108,49 @@ export const createAccountFunction = (
     }
   };
 };
+
+export const createPostFunction = (
+  Fields,
+  setLoading,
+  signer,
+  setFields,
+  setIsSelected,
+  setSelectFile
+) => {
+  return async (dispatch) => {
+    try {
+      setLoading(true);
+      const { file, message, hashtags } = Fields;
+
+      if (!message || !file || hashtags.length === 0) {
+        setLoading(false);
+        dispatch(setSnackbar(true, "info", "All fields required!"));
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const libertee = getLibertee(signer);
+
+      const IpfsHash = await getImgHash(formData);
+
+      const txHash = await libertee.postMedia(IpfsHash, message, hashtags);
+
+      if (txHash) {
+        setLoading(false);
+        dispatch(setSnackbar(true, "success", "Successfully posted"));
+        setIsSelected(false);
+        setSelectFile(null);
+        setFields({
+          file: "",
+          message: "",
+          hashtags: [],
+        });
+      }
+    } catch (error) {
+      setLoading(false);
+      dispatch(setSnackbar(true, "error", error.code));
+    }
+  };
+};

@@ -4,7 +4,7 @@ const HomeWrapper = styled.div`
   .Home {
     .post_section {
       .post_card {
-        padding: 1rem 1.5rem;
+        padding: 1rem 1.5rem 0.5rem 1.5rem;
         border-radius: 0px 0px 4px 4px;
         border-bottom: 1px solid ${(props) => props.theme.bodyLineMain};
 
@@ -22,7 +22,7 @@ const HomeWrapper = styled.div`
           }
 
           .person {
-            font-size: 2.4rem;
+            font-size: 2rem;
             border-radius: 50%;
             padding: 0.2rem;
             border: 1px solid ${(props) => props.theme.ButtonPrimaryBg};
@@ -32,21 +32,73 @@ const HomeWrapper = styled.div`
 
         .post_form_section {
           .input_field {
+            input,
             textarea {
-              // border: 1px solid ${(props) => props.theme.bodyLineMain};
-              border: none;
+              border: 1px solid ${(props) => props.theme.bodyLineMain};
               outline: none;
               width: 100% !important;
               background: transparent;
-              padding: 0.8rem 0.5rem 0.5rem 0rem;
+              padding: 0.8rem 0.5rem 0.5rem 0.8rem;
               border-radius: 8px;
-              overflow: hidden;
-              resize: none;
-
+              font-weight: 500;
               color: ${(props) => props.theme.lightMainColor};
 
               &::placeholder {
-                color: ${(props) => props.theme.lightMainColor};
+                color: ${(props) => props.theme.lightSecondaryColor};
+              }
+            }
+
+            textarea {
+              overflow: hidden;
+              font-weight: 500;
+              resize: none;
+            }
+
+            button {
+              position: absolute;
+              right: 30px;
+              top: 60px;
+              width: 30px;
+              height: 30px;
+              font-size: 1.2rem;
+              background: ${(props) => props.theme.ButtonPrimaryBg};
+              text-align: center;
+              border-radius: 50%;
+              color: ${(props) => props.theme.BodyTertiaryColor};
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+          }
+
+          .hashtag_section {
+            .name {
+              span {
+                display:flex;
+                align-items:center;
+                justify-content-center;
+                border: 1px solid ${(props) => props.theme.ButtonPrimaryBg};
+                padding:0.2rem 0.5rem;
+                min-width:40px;
+                border-radius:0.4rem;
+  
+                p {
+                  color: ${(props) => props.theme.ButtonPrimaryBg};
+                  font-size: 0.8rem;
+                }
+                button {
+                  background:none;
+                  cursor:pointer;
+                  
+                  i {
+                    color: ${(props) => props.theme.lightMainColor};
+                    margin-left: 7px;
+                    font-size: 0.9rem;
+                   
+                  }
+                }
+               
               }
             }
           }
@@ -55,9 +107,14 @@ const HomeWrapper = styled.div`
         .select_img_Section {
           display: relative;
 
+          button {
+            width:20px;
+            background:none;
+            cursor:pointer
+          }
+
           i {
             font-size: 1.2rem;
-            cursor: pointer;
             color: ${(props) => props.theme.BodySecondaryColor};
           }
 
@@ -69,7 +126,7 @@ const HomeWrapper = styled.div`
 
         .images_section {
           border-top: 1px solid ${(props) => props.theme.bodyLineMain};
-          padding: 1rem 0rem 0rem 0rem;
+          padding: 0.7rem 0rem 0rem 0rem;
           width: 100%;
 
           label {
