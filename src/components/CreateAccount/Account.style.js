@@ -115,7 +115,7 @@ const AccountWrapper = styled.div`
                 background: ${(props) => props.theme.BodyNeutralAlt};
               }
               $:focus {
-                background: ${(props) => props.theme.BodyNeutralAlt};
+                background: none;
               }
             }
             .dropdown-item:hover > span,
@@ -214,6 +214,13 @@ const AccountWrapper = styled.div`
   @media only screen and (max-width: 900px) {
     .CreateAccount {
       padding: 1rem 1rem;
+      .header {
+        .wallet {
+          p {
+            display:none;
+          }
+        }
+      }
     }
   }
 `;

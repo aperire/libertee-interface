@@ -87,7 +87,6 @@ h4,
 h5,
 h6 {
   color: ${(props) => props.theme.HeadersMain};
-  line-height: inherit;
   margin-bottom:inherit;
 }
 
@@ -211,5 +210,4 @@ span {
   }
   
 }
-
 `;

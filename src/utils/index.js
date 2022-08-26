@@ -1,5 +1,6 @@
 import { Libertee } from "libertee-sdk";
 import { setSnackbar } from "Redux/actions/snackbar";
+import axios from "axios";
 
 export const createAccountFunction = (AccountFields, signer, setLoading) => {
   return async (dispatch) => {
@@ -9,7 +10,7 @@ export const createAccountFunction = (AccountFields, signer, setLoading) => {
         nickName,
         bio,
         website,
-        image,
+        file,
         hashtags,
         telegram,
         twitter,
@@ -17,31 +18,50 @@ export const createAccountFunction = (AccountFields, signer, setLoading) => {
         email,
       } = AccountFields;
 
-      if (!nickName || !bio || !website || !image || !hashtags) {
-        setLoading(false);
-        dispatch(setSnackbar(true, "info", "All fields required!"));
-        return;
-      }
+      // if (!nickName || !bio || !website || !file || !hashtags) {
+      //   setLoading(false);
+      //   dispatch(setSnackbar(true, "info", "All fields required!"));
+      //   return;
+      // }
 
       const libertee = new Libertee(signer);
 
-      const nameExists = await libertee.checkNameExists(nickName);
+      // const nameExists = await libertee.checkNameExists(nickName);
 
-      if (nameExists) {
-        dispatch(setSnackbar(true, "success", "Name already exits!"));
-        setLoading(false);
-        return;
-      }
+      // if (nameExists) {
+      //   dispatch(setSnackbar(true, "info", "Name already exits!"));
+      //   setLoading(false);
+      //   return;
+      // }
 
-      const pfpHash = await libertee.uploadPinata(
-        "QmccEdPvxSpJ7L4yyNjapHy7idAE7xvuULX2zdprnanpCz",
-        image.name,
-        "3b710ac5b6fddca7c1b8",
-        "226c102e9afe271af2ffa7c7f1fc955b72e116dddbb947db1fca3852fddcfe65"
-      );
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const resFile = await axios({
+        method: "post",
+        url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+        data: formData,
+        headers: {
+          pinata_api_key: `${process.env.REACT_APP_PINATA_API_KEY}`,
+          pinata_secret_api_key: `${process.env.REACT_APP_PINATA_API_SECRET}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const ImgHash = `${resFile.data.IpfsHash}`;
+      console.log(ImgHash);
+
+      // const pfpHash = await libertee.uploadPinata(
+      //   ImgHash,
+      //   file.name,
+      //   process.env.REACT_APP_PINATA_API_KEY,
+      //   process.env.REACT_APP_PINATA_API_SECRET
+      // );
+
+      // console.log(pfpHash);
 
       const txHash = await libertee.createAccount(
-        pfpHash,
+        ImgHash,
         nickName,
         bio,
         telegram,
@@ -57,9 +77,10 @@ export const createAccountFunction = (AccountFields, signer, setLoading) => {
         dispatch(setSnackbar(true, "success", "Successfully created account"));
       }
     } catch (error) {
-      console.log(error);
       setLoading(false);
-      dispatch(setSnackbar(true, "error", "Something went wrong!"));
+      console.log(error);
+      dispatch(setSnackbar(true, "error", error.message));
+      // dispatch(setSnackbar(true, "error", "Something went wrong"));
     }
   };
 };

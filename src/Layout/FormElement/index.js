@@ -33,7 +33,7 @@ const Elements = {
   },
   UploadProfile: {
     label: "Upload Profile",
-    name: "image",
+    name: "file",
     type: "file",
     placeholder: "Upload profile",
     required: true,

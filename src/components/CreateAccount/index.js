@@ -18,7 +18,7 @@ const CreateAccount = () => {
     nickName: "",
     bio: "",
     website: "",
-    image: "",
+    file: "",
     hashtags: [],
     telegram: "",
     twitter: "",
@@ -31,7 +31,7 @@ const CreateAccount = () => {
   };
 
   const SelectFormImg = (e) => {
-    setAccountFields({ ...AccountFields, image: e.target.files[0] });
+    setAccountFields({ ...AccountFields, file: e.target.files[0] });
   };
 
   const HashtagFormData = () => {
@@ -85,7 +85,7 @@ const CreateAccount = () => {
                           loading="lazy"
                           className="pr-2"
                         />
-                        Connect to MetaMask
+                        <p>Connect to MetaMask</p>
                       </Button>
                     ) : (
                       <div className="btn-group">
@@ -170,8 +170,8 @@ const CreateAccount = () => {
                                   onChange={SelectFormImg}
                                   style={{ display: "none" }}
                                 />
-                                {AccountFields?.image?.name
-                                  ? AccountFields?.image?.name
+                                {AccountFields?.file?.name
+                                  ? AccountFields?.file?.name
                                   : " Upload file ( png, jpg, gif )"}
                               </label>
                             )}
