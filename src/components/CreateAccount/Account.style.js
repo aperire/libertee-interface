@@ -37,98 +37,9 @@ const AccountWrapper = styled.div`
       );
 
     .header {
-      img {
+      .logo_img {
         height: 3.5rem;
         width: auto;
-      }
-
-      .wallet {
-        img {
-          width: auto;
-          height: 1.8rem;
-        }
-
-        .btn-group {
-          width: 100%;
-
-          .dropdown_btn {
-            background: transparent;
-            border: none;
-            outline: none;
-            width: 100%;
-            padding: 0.8rem 1.8rem;
-            border-radius: 10px;
-            background: ${(props) => props.theme.ButtonPrimaryBg};
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-
-            .dropdown_btn_left {
-              span {
-                color: ${(props) => props.theme.BodyTertiaryColor};
-                text-transform: uppercase;
-              }
-            }
-
-            .dropdown_btn_right {
-              .bottom_icon {
-                color: ${(props) => props.theme.BodyTertiaryColor};
-              }
-            }
-          }
-
-          .dropdown-menu {
-            position: absolute !important;
-            background: ${(props) => props.theme.BodyTertiaryColor};
-            margin: 0.4rem 0 0;
-            padding: 0;
-            border-radius: 0.4rem;
-            transition: all 0.2s;
-            opacity: 1;
-            overflow: hidden;
-            transform-origin: top center;
-            transform: scale(1, 0);
-            display: block;
-            box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-            width: 100%;
-
-            .dropdown-item {
-              padding: 0.6rem 1rem;
-              margin: 0rem 0rem;
-              width: 100%;
-              color: white;
-              transition: all 0.2s;
-
-              .logout_icon {
-                font-size: 1.3rem;
-                color: ${(props) => props.theme.ButtonPrimaryBg};
-              }
-
-              span {
-                padding-left: 5px;
-                color: ${(props) => props.theme.ButtonPrimaryBg};
-                text-decoration: none;
-                transition: all 0.3s;
-              }
-
-              &:hover {
-                background: ${(props) => props.theme.BodyNeutralAlt};
-              }
-              $:focus {
-                background: none;
-              }
-            }
-            .dropdown-item:hover > span,
-            .dropdown-item:hover > profile_icon {
-              color: ${(props) => props.theme.BodyPrimary};
-            }
-          }
-          &.show {
-            .dropdown-menu {
-              transform: scale(1);
-            }
-          }
-        }
       }
     }
 
@@ -172,7 +83,7 @@ const AccountWrapper = styled.div`
             position: absolute;
             right: 30px;
             top: 5px;
-            width: 100px;
+            width: 70px;
             background:  ${(props) => props.theme.BodyTertiaryColor};
             padding:0.3rem 0.5rem;
             text-align:center;
@@ -180,6 +91,26 @@ const AccountWrapper = styled.div`
             color: ${(props) => props.theme.ButtonPrimaryBg};
             font-size: 0.9rem;
             cursor:pointer;
+          }
+          .not_exit {
+            color:green;
+          }
+          .exit {
+            color:red;
+          }
+
+          .check_user {
+            position: absolute;
+            right: 30px;
+            top: 11px;
+            text-align:center;
+            display:flex;
+            align-items:center;
+            flex-direction:row;
+
+            p{
+              font-size:0.8rem;
+            }
           }
         }
 
@@ -214,13 +145,6 @@ const AccountWrapper = styled.div`
   @media only screen and (max-width: 900px) {
     .CreateAccount {
       padding: 1rem 1rem;
-      .header {
-        .wallet {
-          p {
-            display:none;
-          }
-        }
-      }
     }
   }
 `;

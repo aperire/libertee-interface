@@ -5,13 +5,13 @@ import { AccountFormFields } from "Layout/FormElement";
 import Input from "Layout/Form/Input";
 import { useWallet } from "contexts/WalletContext";
 import { useDispatch } from "react-redux";
-import { MdKeyboardArrowDown } from "react-icons/md";
-import { IoMdLogOut } from "react-icons/io";
-import { createAccountFunction } from "utils";
+import { createAccountFunction, isUserExits } from "utils";
+import WalletButton from "../globalComponents/WalletButton";
 
 const CreateAccount = () => {
-  const { connectWallet, disconnectWallet, publickey, signer } = useWallet();
+  const { publickey, signer } = useWallet();
   const dispatch = useDispatch();
+  const [checkUser, setCheckUser] = useState(null);
   const [Loading, setLoading] = useState(false);
   const [hashtag, setHashtag] = useState("");
   const [AccountFields, setAccountFields] = useState({
@@ -26,8 +26,17 @@ const CreateAccount = () => {
     email: "",
   });
 
-  const AccountFormData = (e) => {
+  const AccountFormData = async (e) => {
     setAccountFields({ ...AccountFields, [e.target.name]: e.target.value });
+    if (e.target.name === "nickName" && signer) {
+      if (e.target.value.length !== 0) {
+        const check = await isUserExits(signer, e.target.value);
+        console.log(check);
+        setCheckUser(check);
+      } else {
+        setCheckUser(null);
+      }
+    }
   };
 
   const SelectFormImg = (e) => {
@@ -65,67 +74,15 @@ const CreateAccount = () => {
             <div className="header">
               <div className="row d-flex align-items-center">
                 <div className="col-lg-6 col-md-6 col-4">
-                  <img src="/images/Logo.png" alt="Logo" loading="lazy" />
+                  <img
+                    src="/images/Logo.png"
+                    alt="Logo"
+                    loading="lazy"
+                    className="logo_img"
+                  />
                 </div>
                 <div className="col-lg-6 col-md-6 col-8 d-flex justify-content-end">
-                  <div className="wallet">
-                    {!publickey ? (
-                      <Button
-                        active={1}
-                        br="0.4rem"
-                        p="0.8rem 1.2rem"
-                        size="1rem"
-                        id="btn"
-                        onClick={() => dispatch(connectWallet())}
-                        className="d-flex align-items-center"
-                      >
-                        <img
-                          src="/images/Metamask.png"
-                          alt="Metamask"
-                          loading="lazy"
-                          className="pr-2"
-                        />
-                        <p>Connect to MetaMask</p>
-                      </Button>
-                    ) : (
-                      <div className="btn-group">
-                        <button
-                          type="button"
-                          className="dropdown_btn"
-                          data-toggle="dropdown"
-                          data-display="static"
-                          aria-expanded="false"
-                        >
-                          <div className="dropdown_btn_left align-items-center">
-                            <span>
-                              {" "}
-                              {`${publickey.slice(0, 4)}...${publickey.slice(
-                                publickey.length - 4,
-                                publickey.length
-                              )}`}
-                            </span>
-                          </div>
-                          <div className="dropdown_btn_right justify-content-end align-items-center">
-                            <MdKeyboardArrowDown className="bottom_icon ml-1" />
-                          </div>
-                        </button>
-                        <div className="dropdown-menu dropdown-menu-right">
-                          <button
-                            className="dropdown-item d-flex align-items-center"
-                            type="button"
-                            onClick={() => dispatch(disconnectWallet())}
-                          >
-                            <div>
-                              <IoMdLogOut className="logout_icon" />
-                            </div>
-                            <div className="token_name ml-1">
-                              <span>Disconnect</span>
-                            </div>
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <WalletButton />
                 </div>
               </div>
             </div>
@@ -149,17 +106,45 @@ const CreateAccount = () => {
                         const { name, type, controlId, placeholder } = List;
                         return (
                           <div className="col-12 form_field mt-3" key={ind}>
-                            {type !== "file" ? (
-                              <Input
-                                type={type}
-                                name={name}
-                                placeholder={placeholder}
-                                autoComplete="off"
-                                id={controlId}
-                                value={AccountFields[name]}
-                                onChange={AccountFormData}
-                              />
-                            ) : (
+                            {name !== "file" && (
+                              <>
+                                <Input
+                                  type={type}
+                                  name={name}
+                                  placeholder={placeholder}
+                                  autoComplete="off"
+                                  id={controlId}
+                                  value={AccountFields[name]}
+                                  onChange={AccountFormData}
+                                />
+
+                                {name === "nickName" && (
+                                  <>
+                                    {checkUser !== null && (
+                                      <span
+                                        className={`check_user ${
+                                          checkUser ? "exit" : "not_exit"
+                                        }`}
+                                      >
+                                        {checkUser ? (
+                                          <>
+                                            <p>already exit</p>
+                                            <i className="zmdi zmdi-close pl-2" />
+                                          </>
+                                        ) : (
+                                          <>
+                                            <p> not exit</p>
+                                            <i className="zmdi zmdi-check pl-2" />
+                                          </>
+                                        )}
+                                      </span>
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )}
+
+                            {name === "file" && (
                               <label className="upload">
                                 <Input
                                   type={type}
@@ -167,6 +152,8 @@ const CreateAccount = () => {
                                   placeholder={placeholder}
                                   autoComplete="off"
                                   id={controlId}
+                                  accept="image/png, image/gif, image/jpg"
+                                  required={true}
                                   onChange={SelectFormImg}
                                   style={{ display: "none" }}
                                 />
@@ -200,9 +187,9 @@ const CreateAccount = () => {
                         <div className="row">
                           {AccountFields?.hashtags.length > 0 && (
                             <>
-                              {AccountFields?.hashtags?.map((list) => {
+                              {AccountFields?.hashtags?.map((list, ind) => {
                                 return (
-                                  <div className="name ml-3 mt-3">
+                                  <div className="name ml-3 mt-3" key={ind}>
                                     <span>
                                       <p> {list}</p>
                                       <i
@@ -226,9 +213,23 @@ const CreateAccount = () => {
                           size="1rem"
                           id="btn"
                           disabled={
-                            publickey ? Loading : !publickey ? true : false
+                            publickey
+                              ? checkUser
+                                ? true
+                                : Loading
+                                ? true
+                                : false
+                              : true
                           }
-                          className={!publickey ? "not-allowed" : null}
+                          className={
+                            publickey
+                              ? checkUser
+                                ? "not-allowed"
+                                : Loading
+                                ? "not-allowed"
+                                : null
+                              : "not-allowed"
+                          }
                         >
                           {Loading ? (
                             <p
