@@ -152,6 +152,51 @@ const HomeWrapper = styled.div`
           }
         }
       }
+
+      .posts_card {
+        padding: 1rem 1.5rem;
+        border-radius: 0px 0px 4px 4px;
+        border-bottom: 1px solid ${(props) => props.theme.bodyLineMain};
+        display:flex;
+        flex-direction:row;
+
+        &:hover {
+          background:${(props) => props.theme.lightTertiaryColor};
+        }
+
+        .poster_img {
+          img {
+            border-radius:50%;
+            height:2.6rem;
+            width:2.6rem;
+            object-fit:cover;
+          }
+        }
+
+        .details_section {
+          width:100%;
+
+          .username {
+            span {
+              font-size:0.9rem;
+            }          
+          }
+  
+          .message{
+            span {
+              font-size:0.9rem;
+            }
+          }
+  
+          .post_img {
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+        }
+      } 
     }
   }
 `;

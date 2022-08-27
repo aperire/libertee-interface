@@ -9,6 +9,7 @@ export const lightTheme = {
   BodyTertiaryColor: "white",
   lightMainColor: "#6b6b6b",
   lightSecondaryColor: "#a8a8a8",
+  lightTertiaryColor: "rgba(0,0,0,0.03)",
   bodyLineMain: "rgb(239, 243, 244)",
   bodyOverlay: "rgb(239, 243, 244)",
   HeadersMain: "black",
@@ -94,7 +95,7 @@ label {
 }
 
 span {
-  font-weight:500;
+  // font-weight:500;
 }
 
 .container {
@@ -111,21 +112,21 @@ span {
 .float_child_nav {
   position: fixed;
   top: 0;
-  width: 270px;
+  width: 285px;
   float: left;
   height: 100%;
 }
 
 .float_child_routes {
   position: relative;
-  left: 270px;
-  width: calc(100% - 270px);
+  left: 285px;
+  width: calc(100% - 285px);
   float: left;
   padding-bottom:50px;
 }
 
 .float_page_left {
-  width: calc(100% - 320px);  
+  width: calc(100% - 350px);  
   float: left;
   border-left:1px solid ${(props) => props.theme.bodyLineMain};
   border-right:1px solid ${(props) => props.theme.bodyLineMain};
@@ -135,7 +136,7 @@ span {
 }
 
 .float_page_right{
-  width: 320px;
+  width: 350px;
   float: left;
   padding: 0px 25px;
   height:100%;
@@ -146,30 +147,7 @@ span {
   cursor: not-allowed! important;
 }
  
-.web3modal-modal-card {
-  background: ${(props) => props.theme.BodyTertiaryColor};
-  // max-width: 1000px !important;
-  .web3modal-provider-wrapper{
-    .web3modal-provider-container{
-      padding: 24px 28px !important;
 
-      .web3modal-provider-icon{
-        img{
-          width:auto !important;
-          height:2rem !important;
-        }
-      }
-      .web3modal-provider-name{
-        font-size: 20px !important;
-      }
-      .web3modal-provider-description{
-        font-size: 15px !important;
-        margin: 0em 0px !important;
-        color: ${(props) => props.theme.BodyTertiaryColor};
-      }
-    }
-  }
-}
 
 
 @media only screen and (max-width: 1200px) { 

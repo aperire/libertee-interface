@@ -33,7 +33,7 @@ const Elements = {
   },
   UploadProfile: {
     label: "Upload Profile",
-    name: "file",
+    name: "image",
     type: "file",
     placeholder: "Upload profile",
     required: true,
@@ -61,6 +61,5 @@ const Elements = {
 export const AccountFormFields = [
   Elements.Username,
   Elements.Bio,
-  Elements.Website,
   Elements.UploadProfile,
 ];

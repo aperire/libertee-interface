@@ -40,6 +40,7 @@ const AccountWrapper = styled.div`
       .logo_img {
         height: 3.5rem;
         width: auto;
+        cursor:pointer;
       }
     }
 
@@ -66,7 +67,7 @@ const AccountWrapper = styled.div`
         .form_field {
           position: relative;
 
-          label {
+          .upload {
             width: 100%;
             border: 1px solid ${(props) => props.theme.bodyLineMain};
             outline: none;
@@ -92,6 +93,7 @@ const AccountWrapper = styled.div`
             font-size: 0.9rem;
             cursor:pointer;
           }
+          
           .not_exit {
             color:green;
           }

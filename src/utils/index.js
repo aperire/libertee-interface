@@ -1,4 +1,4 @@
-import { Libertee } from "libertee-sdk";
+import { Hooke } from "hooke-sdk";
 import { setSnackbar } from "Redux/actions/snackbar";
 import axios from "axios";
 
@@ -18,14 +18,14 @@ export const getImgHash = async (formData) => {
   return resFile.data.IpfsHash;
 };
 
-export const getLibertee = (signer) => {
-  return new Libertee(signer);
+export const getHooke = (signer) => {
+  return new Hooke(signer);
 };
 
 export const isUserExits = async (signer, nickName) => {
   try {
-    const libertee = new Libertee(signer);
-    const nameExists = await libertee.checkNameExists(nickName);
+    const hooke = new Hooke(signer);
+    const nameExists = await hooke.checkNameExists(nickName);
     return nameExists;
   } catch (error) {}
 };
@@ -35,35 +35,28 @@ export const createAccountFunction = (
   signer,
   setLoading,
   readAccount,
-  publickey
+  publickey,
+  navigate,
+  formData,
+  setAccountFields
 ) => {
   return async (dispatch) => {
     try {
       setLoading(true);
-      const {
-        nickName,
-        bio,
-        website,
-        file,
-        hashtags,
-        telegram,
-        twitter,
-        phone,
-        email,
-      } = AccountFields;
+      const { nickName, bio, image, hashtags } = AccountFields;
 
-      if (!nickName || !bio || !website || !file || hashtags.length === 0) {
+      if (!nickName || !bio || !image || hashtags.length === 0) {
         setLoading(false);
         dispatch(setSnackbar(true, "info", "All fields required!"));
         return;
       }
 
       if (
-        file.type === "image/jpg" ||
-        file.type === "image/png" ||
-        file.type === "image/gif"
+        image.type === "image/jpg" ||
+        image.type === "image/png" ||
+        image.type === "image/gif"
       ) {
-        const libertee = getLibertee(signer);
+        const hooke = getHooke(signer);
         const isExits = await isUserExits(signer, nickName);
 
         if (isExits) {
@@ -72,28 +65,27 @@ export const createAccountFunction = (
           return;
         }
 
-        const formData = new FormData();
-        formData.append("file", file);
-
         const IpfsHash = await getImgHash(formData);
 
-        const txHash = await libertee.createAccount(
+        const txHash = await hooke.createAccount(
           IpfsHash,
           nickName,
           bio,
-          telegram,
-          twitter,
-          phone,
-          email,
-          website,
           hashtags
         );
 
         if (txHash) {
+          setAccountFields({
+            nickName: "",
+            bio: "",
+            image: "",
+            hashtags: [],
+          });
           setLoading(false);
           dispatch(
             setSnackbar(true, "success", "Successfully created account")
           );
+          navigate("/");
           await readAccount(publickey, signer);
         }
       } else {
@@ -115,27 +107,27 @@ export const createPostFunction = (
   signer,
   setFields,
   setIsSelected,
-  setSelectFile
+  setSelectFile,
+  formData,
+  readFeedPosts
 ) => {
   return async (dispatch) => {
     try {
       setLoading(true);
-      const { file, message, hashtags } = Fields;
 
-      if (!message || !file || hashtags.length === 0) {
+      const { image, message, hashtags } = Fields;
+
+      if (!message || !image || hashtags.length === 0) {
         setLoading(false);
         dispatch(setSnackbar(true, "info", "All fields required!"));
         return;
       }
 
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const libertee = getLibertee(signer);
+      const hooke = getHooke(signer);
 
       const IpfsHash = await getImgHash(formData);
 
-      const txHash = await libertee.postMedia(IpfsHash, message, hashtags);
+      const txHash = await hooke.postMedia(IpfsHash, message, hashtags);
 
       if (txHash) {
         setLoading(false);
@@ -147,10 +139,23 @@ export const createPostFunction = (
           message: "",
           hashtags: [],
         });
+        await readFeedPosts(0, 4, signer);
       }
     } catch (error) {
       setLoading(false);
       dispatch(setSnackbar(true, "error", error.code));
     }
   };
+};
+
+export const getAccount = async (value, signer, type) => {
+  var profile;
+  const hooke = getHooke(signer);
+  if (type === "address") {
+    profile = await hooke.getProfileMap(value);
+  } else if (type === "username") {
+    const address = await hooke.getProfileNameMap(value).owner;
+    profile = await hooke.getProfileMap(address);
+  }
+  return profile;
 };

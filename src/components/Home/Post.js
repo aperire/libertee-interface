@@ -6,15 +6,21 @@ import { BsFileEarmarkPdf } from "react-icons/bs";
 import Button from "Layout/Button";
 import { useDispatch } from "react-redux";
 import { createPostFunction } from "utils";
+import { calculateSize } from "helper";
 
-const Post = ({ pfpHash, username, signer }) => {
+var MAX_WIDTH = 300;
+var MAX_HEIGHT = 150;
+var MIME_TYPE = "image/png";
+var QUALITY = 0.7;
+
+const Post = ({ pfpHash, username, signer, readFeedPosts }) => {
   const [Loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [SelectFile, setSelectFile] = useState(null);
   const [hashtag, setHashtag] = useState("");
   const [isSelected, setIsSelected] = useState(false);
   const [Fields, setFields] = useState({
-    file: "",
+    image: "",
     message: "",
     hashtags: [],
   });
@@ -53,7 +59,7 @@ const Post = ({ pfpHash, username, signer }) => {
     const reader = new FileReader();
     reader.onload = () => {
       if (reader.readyState === 2) {
-        setFields({ ...Fields, file: file });
+        setFields({ ...Fields, image: file });
         setSelectFile(reader.result);
         setIsSelected(true);
       }
@@ -63,8 +69,59 @@ const Post = ({ pfpHash, username, signer }) => {
 
   const closeFileHandler = () => {
     setSelectFile(null);
-    setFields({ ...Fields, file: "" });
+    setFields({ ...Fields, image: "" });
     setIsSelected(false);
+  };
+
+  const postHandler = (e) => {
+    e.preventDefault();
+
+    const { image } = Fields;
+
+    const blobURL = URL.createObjectURL(image);
+    const img = new Image();
+    img.src = blobURL;
+    img.onerror = function () {
+      URL.revokeObjectURL(img.src);
+      console.log("Cannot load image");
+    };
+
+    img.onload = function () {
+      URL.revokeObjectURL(img.src);
+
+      const [newWidth, newHeight] = calculateSize(img, MAX_WIDTH, MAX_HEIGHT);
+      const canvas = document.createElement("canvas");
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+      canvas.toBlob(
+        async (blob) => {
+          var file = new File([blob], image.name, {
+            type: image.type,
+          });
+
+          var formData = new FormData();
+          formData.append("file", file);
+
+          dispatch(
+            createPostFunction(
+              Fields,
+              setLoading,
+              signer,
+              setFields,
+              setIsSelected,
+              setSelectFile,
+              formData,
+              readFeedPosts
+            )
+          );
+        },
+        MIME_TYPE,
+        QUALITY
+      );
+    };
   };
 
   useEffect(() => {
@@ -180,7 +237,7 @@ const Post = ({ pfpHash, username, signer }) => {
                 <label className="upload">
                   <input
                     type="file"
-                    name="file"
+                    name="image"
                     autoComplete="off"
                     id="formBasicMedia"
                     accept="image/png, image/jpg"
@@ -197,11 +254,11 @@ const Post = ({ pfpHash, username, signer }) => {
                 <label className="upload ml-2">
                   <input
                     type="file"
-                    name="file"
+                    name="image"
                     autoComplete="off"
                     id="formBasicMedia"
                     disabled={isSelected}
-                    accept="image/png, image/jpg"
+                    accept="image/gif"
                     onChange={ImgHandler}
                     style={{ display: "none" }}
                   />
@@ -214,11 +271,11 @@ const Post = ({ pfpHash, username, signer }) => {
                 <label className="upload ml-2">
                   <input
                     type="file"
-                    name="file"
+                    name="image"
                     autoComplete="off"
                     disabled={isSelected}
                     id="formBasicMedia"
-                    accept="image/png, image/jpg"
+                    accept="image/pdf"
                     onChange={ImgHandler}
                     style={{ display: "none" }}
                   />
@@ -233,6 +290,7 @@ const Post = ({ pfpHash, username, signer }) => {
               <div className="col-6 d-flex justify-content-end align-items-center">
                 <div>
                   <Button
+                    type="submit"
                     active={2}
                     br="50px"
                     p="0.2rem 1rem"
@@ -246,18 +304,7 @@ const Post = ({ pfpHash, username, signer }) => {
                           : null
                         : "not-allowed"
                     }
-                    onClick={() =>
-                      dispatch(
-                        createPostFunction(
-                          Fields,
-                          setLoading,
-                          signer,
-                          setFields,
-                          setIsSelected,
-                          setSelectFile
-                        )
-                      )
-                    }
+                    onClick={(e) => postHandler(e)}
                   >
                     {Loading ? (
                       <p

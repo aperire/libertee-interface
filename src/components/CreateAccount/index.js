@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AccountWrapper from "./Account.style";
 import Button from "Layout/Button";
 import { AccountFormFields } from "Layout/FormElement";
@@ -8,22 +9,24 @@ import { useDispatch } from "react-redux";
 import { createAccountFunction, isUserExits } from "utils";
 import WalletButton from "../globalComponents/WalletButton";
 
+var MAX_WIDTH = 50;
+var MAX_HEIGHT = 50;
+var MIME_TYPE = "image/png";
+var QUALITY = 0.7;
+
 const CreateAccount = () => {
+  const navigate = useNavigate();
   const { publickey, signer, readAccount } = useWallet();
   const dispatch = useDispatch();
+  // const [select, setSelect] = useState(null);
   const [checkUser, setCheckUser] = useState(null);
   const [Loading, setLoading] = useState(false);
   const [hashtag, setHashtag] = useState("");
   const [AccountFields, setAccountFields] = useState({
     nickName: "",
     bio: "",
-    website: "",
-    file: "",
+    image: "",
     hashtags: [],
-    telegram: "",
-    twitter: "",
-    phone: "",
-    email: "",
   });
 
   const AccountFormData = async (e) => {
@@ -31,7 +34,6 @@ const CreateAccount = () => {
     if (e.target.name === "nickName" && signer) {
       if (e.target.value.length !== 0) {
         const check = await isUserExits(signer, e.target.value);
-        console.log(check);
         setCheckUser(check);
       } else {
         setCheckUser(null);
@@ -40,7 +42,7 @@ const CreateAccount = () => {
   };
 
   const SelectFormImg = (e) => {
-    setAccountFields({ ...AccountFields, file: e.target.files[0] });
+    setAccountFields({ ...AccountFields, image: e.target.files[0] });
   };
 
   const HashtagFormData = () => {
@@ -63,15 +65,77 @@ const CreateAccount = () => {
 
   const CreateAccount = async (e) => {
     e.preventDefault();
-    dispatch(
-      createAccountFunction(
-        AccountFields,
-        signer,
-        setLoading,
-        readAccount,
-        publickey
-      )
-    );
+
+    const { image } = AccountFields;
+
+    // console.log(image);
+
+    let circleCanvas = document.createElement("canvas");
+    let circleCtx = circleCanvas.getContext("2d");
+
+    circleCanvas.width = MAX_WIDTH;
+    circleCanvas.height = MAX_HEIGHT;
+    const centerX = circleCanvas.width / 2;
+    const centerY = circleCanvas.height / 2;
+    const radius = 50;
+
+    const img = new Image();
+    const blobURL = URL.createObjectURL(image);
+    img.src = blobURL;
+
+    img.onerror = function () {
+      URL.revokeObjectURL(img.src);
+      console.log("Cannot load image");
+      return;
+    };
+
+    img.onload = function () {
+      URL.revokeObjectURL(img.src);
+
+      circleCtx.save();
+      circleCtx.beginPath();
+      circleCtx.arc(centerX, centerY, radius, 0, Math.PI * 2, false);
+      circleCtx.strokeStyle = "#2465D3";
+      circleCtx.stroke();
+      circleCtx.clip();
+      circleCtx.drawImage(img, 0, 0, MAX_WIDTH, MAX_HEIGHT);
+      circleCtx.restore();
+
+      circleCanvas.toBlob(
+        async (blob) => {
+          var file = new File([blob], image.name, {
+            type: "image/png",
+          });
+
+          // console.log(file);
+          // const reader = new FileReader();
+          // reader.onload = () => {
+          //   if (reader.readyState === 2) {
+          //     setSelect(reader.result);
+          //   }
+          // };
+          // reader.readAsDataURL(file);
+
+          var formData = new FormData();
+          formData.append("file", file);
+
+          dispatch(
+            createAccountFunction(
+              AccountFields,
+              signer,
+              setLoading,
+              readAccount,
+              publickey,
+              navigate,
+              formData,
+              setAccountFields
+            )
+          );
+        },
+        MIME_TYPE,
+        QUALITY
+      );
+    };
   };
 
   return (
@@ -87,6 +151,7 @@ const CreateAccount = () => {
                     alt="Logo"
                     loading="lazy"
                     className="logo_img"
+                    onClick={() => navigate("/")}
                   />
                 </div>
                 <div className="col-lg-6 col-md-6 col-8 d-flex justify-content-end">
@@ -99,6 +164,11 @@ const CreateAccount = () => {
                   />
                 </div>
               </div>
+              {/* <div className="row">
+                <div className="col-12">
+                  <img src={select} alt="loading..." />
+                </div>
+              </div> */}
             </div>
           </div>
           <div className="col-12 d-flex justify-content-center mt-3">
@@ -120,7 +190,7 @@ const CreateAccount = () => {
                         const { name, type, controlId, placeholder } = List;
                         return (
                           <div className="col-12 form_field mt-3" key={ind}>
-                            {name !== "file" && (
+                            {name !== "image" && (
                               <>
                                 <Input
                                   type={type}
@@ -158,7 +228,7 @@ const CreateAccount = () => {
                               </>
                             )}
 
-                            {name === "file" && (
+                            {name === "image" && (
                               <label className="upload">
                                 <Input
                                   type={type}
@@ -171,8 +241,8 @@ const CreateAccount = () => {
                                   onChange={SelectFormImg}
                                   style={{ display: "none" }}
                                 />
-                                {AccountFields?.file?.name
-                                  ? AccountFields?.file?.name
+                                {AccountFields?.image?.name
+                                  ? AccountFields?.image?.name
                                   : " Upload file ( png, jpg, gif )"}
                               </label>
                             )}

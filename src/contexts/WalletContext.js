@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import { providerOptions } from "lib/ProviderOptions";
-import { getLibertee } from "utils";
+import { getHooke } from "utils";
 
 export const WalletContext = createContext();
 
@@ -15,7 +15,7 @@ export const WalletProvider = ({ children }) => {
   const [network, setNetwork] = useState();
   const [signer, setSigner] = useState(null);
   const [Account, setAccount] = useState(null);
-  const [Posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]);
 
   const web3Modal = new Web3Modal({
     network: "mainnet",
@@ -52,39 +52,56 @@ export const WalletProvider = ({ children }) => {
   };
 
   const readAccount = async (address, signer) => {
-    const libertee = getLibertee(signer);
-    const profile = await libertee.getProfileMap(address);
-    setAccount(profile);
+    const hooke = getHooke(signer);
+    const profile = await hooke.getProfileMap(address);
+    const hashTagArrayLength = await hooke.getAddressHashTagLength(address);
+    var hashTagArray = [];
+
+    for (var i = 0; i < hashTagArrayLength; i++) {
+      var hashTag = await hooke.getAddressHashTag(address, i);
+      hashTagArray.push(hashTag);
+    }
+
+    const accountInfo = {
+      pfpHash: profile?.pfpHash,
+      username: profile?.username,
+      bio: profile?.bio,
+      address: profile?.owner,
+      hashTagArray: hashTagArray,
+    };
+
+    setAccount(accountInfo);
   };
 
   const readFeedPosts = async (start, end, signer) => {
     try {
       var postArray = [];
 
-      const libertee = getLibertee(signer);
-      const mediaArrayLength = await libertee.getMediaArrayLength();
-      for (
-        var i = mediaArrayLength - start - 1;
-        i > mediaArrayLength - end - 1;
-        i--
-      ) {
-        var media = await libertee.getMediaArray(i);
+      const hooke = getHooke(signer);
+      const mediaArrayLength = await hooke.getMediaArrayLength();
 
-        const data = parseInt(media.uploadDate);
+      for (var i = 0; i < mediaArrayLength; i++) {
+        const media = await hooke.getMediaArray(i);
+
+        const date = parseInt(media.uploadDate);
         const message = media.text;
-        const img = media.ipfsHash;
+        const pfpHash = media.pfpHash;
+        const postHash = media.postHash;
         const userName = media.userName;
 
         postArray.push({
-          data,
+          date,
           message,
-          img,
+          pfpHash,
+          postHash,
           userName,
         });
       }
 
-      setPosts([...Posts, ...postArray]);
-    } catch (error) {}
+      setPosts(postArray);
+    } catch (error) {
+      // console.log(error);
+    }
   };
 
   const refreshState = () => {
@@ -144,7 +161,7 @@ export const WalletProvider = ({ children }) => {
     if (publickey && signer) {
       const getInfo = async () => {
         await readAccount(publickey, signer);
-        await readFeedPosts(0, 10, signer);
+        await readFeedPosts(0, 4, signer);
       };
       getInfo();
     }
@@ -164,7 +181,8 @@ export const WalletProvider = ({ children }) => {
         signer,
         Account,
         readAccount,
-        Posts,
+        posts,
+        readFeedPosts,
       }}
     >
       {children}
